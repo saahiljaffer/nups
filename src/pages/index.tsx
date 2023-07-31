@@ -137,10 +137,18 @@ export default function Home() {
   const { user } = useUser();
   const { data, isLoading: partiesLoading } = api.parties.getAll.useQuery(
     undefined,
-    { enabled: user?.id === "user_2TJY1nrt8JFKw4lO6eD7G4blWXs" }
+    {
+      enabled:
+        user?.id === "user_2TJY1nrt8JFKw4lO6eD7G4blWXs" ||
+        user?.id === "user_2TKF8G8bcMQt2ikiWuxmhoEE9qn",
+    }
   );
 
-  if (!user || user.id !== "user_2TJY1nrt8JFKw4lO6eD7G4blWXs")
+  if (
+    !user ||
+    (user.id !== "user_2TJY1nrt8JFKw4lO6eD7G4blWXs" &&
+      user.id !== "user_2TKF8G8bcMQt2ikiWuxmhoEE9qn")
+  )
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gray-900 text-gray-200">
         please contact saahil
