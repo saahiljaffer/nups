@@ -8,6 +8,8 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
+    CLERK_SECRET_KEY: z.string().min(1),
     NODE_ENV: z.enum(["development", "test", "production"]),
   },
 

@@ -1,7 +1,6 @@
 import Head from "next/head";
-import Link from "next/link";
 import { api } from "~/utils/api";
-import { PauseCircleIcon } from "@heroicons/react/24/solid";
+import { PauseCircleIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
   const { data, isLoading: postsLoading } = api.parties.getAll.useQuery();

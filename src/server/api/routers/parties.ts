@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const partiesRouter = createTRPCRouter({
@@ -7,7 +6,6 @@ export const partiesRouter = createTRPCRouter({
       include: {
         guests: true,
       },
-      take: 100,
       orderBy: [{ createdAt: "desc" }],
     });
 
