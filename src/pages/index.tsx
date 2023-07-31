@@ -1,7 +1,8 @@
 import Head from "next/head";
 import { type RouterOutputs, api } from "~/utils/api";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { useUser } from "@clerk/nextjs";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 type Party = RouterOutputs["parties"]["getAll"][number];
 const PartyCard = ({ party }: { party: Party }) => (
@@ -20,7 +21,7 @@ const PartyCard = ({ party }: { party: Party }) => (
                 </p>
               </div>
               <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                <PlusCircleIcon className="h-8 w-8" />
+                <CheckCircleIcon className="h-8 w-8" />
               </div>
             </div>
           </li>
@@ -30,14 +31,119 @@ const PartyCard = ({ party }: { party: Party }) => (
   </div>
 );
 
+type Inputs = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
+const AddPartyCard = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const { mutate } = api.parties.create.useMutation();
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    mutate({ guests: [data] });
+  };
+  return (
+    <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
+      <div className="flow-root">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col"
+          autoComplete="off"
+        >
+          <ul
+            role="list"
+            className="divide-y divide-gray-200 dark:divide-gray-700"
+          >
+            <li className="py-3 sm:py-4">
+              <div className="flex items-center space-x-4">
+                <div className="grid min-w-0 flex-1 grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="firstName"
+                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                      placeholder="Saahil"
+                      required
+                      {...register("firstName", { required: true })}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="lastName"
+                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                      placeholder="Jaffer"
+                      required
+                      {...register("lastName", { required: true })}
+                    />
+                  </div>
+                  <div className="col-span-full">
+                    <label
+                      htmlFor="email"
+                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                      placeholder="contact@saahiljaffer.com"
+                      required
+                      {...register("email", { required: true })}
+                    />
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div className="flex flex-1 justify-end gap-2">
+            <button className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-green-400 to-blue-600 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-200 group-hover:from-green-400 group-hover:to-blue-600 dark:text-white dark:focus:ring-green-800">
+              <span className="relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900">
+                Add Guest
+              </span>
+            </button>
+            <button
+              type="submit"
+              className="rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
   const { user } = useUser();
-  const { data, isLoading: partiesLoading } = api.parties.getAll.useQuery();
+  const { data, isLoading: partiesLoading } = api.parties.getAll.useQuery(
+    undefined,
+    { enabled: user?.id === "user_2TJY1nrt8JFKw4lO6eD7G4blWXs" }
+  );
 
   if (!user || user.id !== "user_2TJY1nrt8JFKw4lO6eD7G4blWXs")
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gray-900 text-gray-200">
-        please contact support
+        please contact saahil
       </div>
     );
 
@@ -76,13 +182,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+        <div className="container flex max-w-md flex-col items-center justify-center gap-12 px-4 py-16">
           <button
             type="button"
-            className="mb-2 mr-2 rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+            className="place-self-end rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
           >
-            Green to Blue
+            Add Party
           </button>
+          <AddPartyCard />
           {data.map((party) => (
             <PartyCard key={party.id} party={party} />
           ))}
