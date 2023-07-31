@@ -19,7 +19,9 @@ model Guest {
   partyId   String
   firstName String
   lastName String
-  email String
+  email String?
+  gender Gender
+  mendhi Boolean @default(false)
   @@index([partyId])
 }
 
@@ -28,4 +30,9 @@ model Party {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   guests    Guest[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }

@@ -1,8 +1,9 @@
 import Head from "next/head";
-import { type RouterOutputs, api } from "~/utils/api";
-import { CheckCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { type RouterOutputs, api, type RouterInputs } from "~/utils/api";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { useUser } from "@clerk/nextjs";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler, useFieldArray } from "react-hook-form";
+import { use, useEffect, useState } from "react";
 
 type Party = RouterOutputs["parties"]["getAll"][number];
 const PartyCard = ({ party }: { party: Party }) => (
@@ -31,104 +32,162 @@ const PartyCard = ({ party }: { party: Party }) => (
   </div>
 );
 
-type Inputs = {
-  firstName: string;
-  lastName: string;
-  email: string;
-};
-
 const AddPartyCard = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
-  const { mutate } = api.parties.create.useMutation();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    mutate({ guests: [data] });
+  const { control, register, handleSubmit, reset } =
+    useForm<RouterInputs["parties"]["create"]>();
+  const ctx = api.useContext();
+  const [showForm, setShowForm] = useState(false);
+  const { mutate } = api.parties.create.useMutation({
+    onSuccess: () => {
+      void ctx.parties.getAll.invalidate();
+      setShowForm(false);
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+  const { fields, append, remove } = useFieldArray({
+    name: "guests",
+    control,
+  });
+  const onSubmitFunction: SubmitHandler<RouterInputs["parties"]["create"]> = (
+    data
+  ) => {
+    mutate(data);
+    reset();
+    remove();
   };
+
   return (
-    <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
-      <div className="flow-root">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col"
-          autoComplete="off"
-        >
-          <ul
-            role="list"
-            className="divide-y divide-gray-200 dark:divide-gray-700"
-          >
-            <li className="py-3 sm:py-4">
-              <div className="flex items-center space-x-4">
-                <div className="grid min-w-0 flex-1 grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="firstName"
-                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                      placeholder="Saahil"
-                      required
-                      {...register("firstName", { required: true })}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="lastName"
-                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                      placeholder="Jaffer"
-                      required
-                      {...register("lastName", { required: true })}
-                    />
-                  </div>
-                  <div className="col-span-full">
-                    <label
-                      htmlFor="email"
-                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                      placeholder="contact@saahiljaffer.com"
-                      required
-                      {...register("email", { required: true })}
-                    />
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <div className="flex flex-1 justify-end gap-2">
-            <button className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-green-400 to-blue-600 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-200 group-hover:from-green-400 group-hover:to-blue-600 dark:text-white dark:focus:ring-green-800">
-              <span className="relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900">
-                Add Guest
-              </span>
-            </button>
-            <button
-              type="submit"
-              className="rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+    <div className="container flex max-w-md flex-col gap-6">
+      <button
+        onClick={() => {
+          setShowForm(true);
+          append({ firstName: "", lastName: "", email: "", gender: "MALE" });
+        }}
+        type="button"
+        className="place-self-end rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+      >
+        Add Party
+      </button>
+      {showForm && (
+        <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
+          <div className="flow-root">
+            <form
+              onSubmit={handleSubmit(onSubmitFunction)}
+              className="flex flex-col"
+              autoComplete="off"
             >
-              Submit
-            </button>
+              <ul
+                role="list"
+                className="divide-y divide-gray-200 dark:divide-gray-700"
+              >
+                {fields.map((field, index) => (
+                  <li className="py-3 sm:py-4" key={field.id}>
+                    <div className="flex items-center space-x-4">
+                      <div className="grid min-w-0 flex-1 grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            htmlFor="firstName"
+                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            First Name
+                          </label>
+                          <input
+                            type="text"
+                            id="firstName"
+                            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            placeholder="Saahil"
+                            required
+                            {...register(`guests.${index}.firstName`, {
+                              required: true,
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="lastName"
+                            className="mb-2block text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Last Name
+                          </label>
+                          <input
+                            type="text"
+                            id="lastName"
+                            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            placeholder="Jaffer"
+                            required
+                            {...register(`guests.${index}.lastName`, {
+                              required: true,
+                            })}
+                          />
+                        </div>
+                        <div className="col-span-full">
+                          <label
+                            htmlFor="email"
+                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            id="email"
+                            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            placeholder="contact@saahiljaffer.com"
+                            required
+                            {...register(`guests.${index}.email`)}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="countries"
+                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Gender
+                          </label>
+                          <select
+                            id="countries"
+                            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            {...register(`guests.${index}.gender`, {
+                              required: true,
+                            })}
+                          >
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-1 justify-end gap-2">
+                <button
+                  onClick={() => {
+                    append({
+                      firstName: "",
+                      lastName: "",
+                      email: "",
+                      gender: "MALE",
+                    });
+                  }}
+                  className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-green-400 to-blue-600 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-200 group-hover:from-green-400 group-hover:to-blue-600 dark:text-white dark:focus:ring-green-800"
+                >
+                  <span className="relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900">
+                    Add Guest
+                  </span>
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -191,12 +250,6 @@ export default function Home() {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
         <div className="container flex max-w-md flex-col items-center justify-center gap-12 px-4 py-16">
-          <button
-            type="button"
-            className="place-self-end rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
-          >
-            Add Party
-          </button>
           <AddPartyCard />
           {data.map((party) => (
             <PartyCard key={party.id} party={party} />

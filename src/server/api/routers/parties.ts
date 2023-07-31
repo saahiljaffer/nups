@@ -22,6 +22,7 @@ export const partiesRouter = createTRPCRouter({
             firstName: z.string(),
             lastName: z.string(),
             email: z.string(),
+            gender: z.enum(["MALE", "FEMALE"]),
           })
         ),
       })
