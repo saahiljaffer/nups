@@ -1,17 +1,53 @@
 import Head from "next/head";
-import { api } from "~/utils/api";
-import { PauseCircleIcon } from "@heroicons/react/24/outline";
+import { type RouterOutputs, api } from "~/utils/api";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { useUser } from "@clerk/nextjs";
+
+type Party = RouterOutputs["parties"]["getAll"][number];
+const PartyCard = ({ party }: { party: Party }) => (
+  <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
+    <div className="flow-root">
+      <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
+        {party.guests.map((guest) => (
+          <li key={guest.id} className="py-3 sm:py-4">
+            <div className="flex items-center space-x-4">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                  {`${guest.firstName} ${guest.lastName}`}
+                </p>
+                <p className="truncate text-sm text-gray-500 dark:text-gray-400">
+                  {guest.email}
+                </p>
+              </div>
+              <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                <PlusCircleIcon className="h-8 w-8" />
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+);
 
 export default function Home() {
-  const { data, isLoading: postsLoading } = api.parties.getAll.useQuery();
+  const { user } = useUser();
+  const { data, isLoading: partiesLoading } = api.parties.getAll.useQuery();
 
-  if (postsLoading)
+  if (!user || user.id !== "user_2TJY1nrt8JFKw4lO6eD7G4blWXs")
     return (
-      <div className="flex grow">
+      <div className="flex h-screen w-screen items-center justify-center bg-gray-900 text-gray-200">
+        please contact support
+      </div>
+    );
+
+  if (partiesLoading)
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-gray-900">
         <div role="status">
           <svg
             aria-hidden="true"
-            className="mr-2 h-8 w-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
+            className="h-10 w-10 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -35,42 +71,20 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Nups</title>
-        <meta name="description" content="Nups" />
+        <title>nups</title>
+        <meta name="description" content="nups" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+          <button
+            type="button"
+            className="mb-2 mr-2 rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+          >
+            Green to Blue
+          </button>
           {data.map((party) => (
-            <div
-              key={party.id}
-              className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8"
-            >
-              <div className="flow-root">
-                <ul
-                  role="list"
-                  className="divide-y divide-gray-200 dark:divide-gray-700"
-                >
-                  {party.guests.map((guest) => (
-                    <li key={guest.id} className="py-3 sm:py-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                            {`${guest.firstName} ${guest.lastName}`}
-                          </p>
-                          <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                            {guest.email}
-                          </p>
-                        </div>
-                        <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                          <PauseCircleIcon className="h-8 w-8" />
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            <PartyCard key={party.id} party={party} />
           ))}
         </div>
       </main>
