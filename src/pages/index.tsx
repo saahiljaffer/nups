@@ -81,6 +81,7 @@ const AddPartyCard = () => {
       // Optimistically update to the new value
       utils.parties.getAll.setData(undefined, (prev) => {
         const optimisticParty: Party = {
+          ...newParty,
           id: "optimistic-party",
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -90,7 +91,7 @@ const AddPartyCard = () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             partyId: "optimistic-party",
-            mendhi: false,
+            mendhi: guest.mendhi === "YES",
           })),
         };
         if (!prev) return [optimisticParty];
