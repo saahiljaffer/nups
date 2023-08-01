@@ -23,8 +23,10 @@ export const partiesRouter = createTRPCRouter({
             lastName: z.string(),
             email: z.string(),
             gender: z.enum(["MALE", "FEMALE"]),
+            mendhi: z.enum(["YES", "NO"]),
           })
         ),
+        inviter: z.enum(["BRIDE", "GROOM"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -32,8 +34,12 @@ export const partiesRouter = createTRPCRouter({
 
       const party = await ctx.prisma.party.create({
         data: {
+          ...input,
           guests: {
-            create: input.guests,
+            create: input.guests.map((guest) => ({
+              ...guest,
+              mendhi: guest.mendhi === "YES",
+            })),
           },
         },
       });

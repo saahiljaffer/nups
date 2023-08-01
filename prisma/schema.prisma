@@ -30,9 +30,15 @@ model Party {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   guests    Guest[]
+  inviter   Inviter
 }
 
 enum Gender {
   MALE
   FEMALE
+}
+
+enum Inviter {
+  BRIDE
+  GROOM
 }
