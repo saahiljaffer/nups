@@ -361,15 +361,15 @@ export default function Home() {
     undefined,
     {
       enabled:
-        user?.id === "user_2TJY1nrt8JFKw4lO6eD7G4blWXs" ||
-        user?.id === "user_2TKF8G8bcMQt2ikiWuxmhoEE9qn",
+        process.env.NODE_ENV === "development" ||
+        user?.id === "user_2TQ4Ew4CRzmIb9lKXHaU7xQHs2L",
     }
   );
 
   if (
     !user ||
-    (user.id !== "user_2TJY1nrt8JFKw4lO6eD7G4blWXs" &&
-      user.id !== "user_2TKF8G8bcMQt2ikiWuxmhoEE9qn")
+    (user.id !== "user_2TQ4Ew4CRzmIb9lKXHaU7xQHs2L" &&
+      process.env.NODE_ENV !== "development")
   )
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gray-900 text-gray-200">
