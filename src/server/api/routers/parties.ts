@@ -1,8 +1,4 @@
-import {
-  createTRPCRouter,
-  privateProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const partiesRouter = createTRPCRouter({
@@ -14,7 +10,7 @@ export const partiesRouter = createTRPCRouter({
       orderBy: [{ createdAt: "desc" }],
     });
   }),
-  create: privateProcedure
+  create: publicProcedure
     .input(
       z.object({
         guests: z.array(
@@ -30,8 +26,6 @@ export const partiesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // const inviterId = ctx.userId;
-
       const party = await ctx.prisma.party.create({
         data: {
           ...input,
@@ -46,4 +40,13 @@ export const partiesRouter = createTRPCRouter({
 
       return party;
     }),
+  delete: publicProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    const party = await ctx.prisma.party.delete({
+      where: {
+        id: input,
+      },
+    });
+
+    return party;
+  }),
 });

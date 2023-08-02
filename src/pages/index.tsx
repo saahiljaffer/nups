@@ -2,68 +2,114 @@ import Head from "next/head";
 import { type RouterOutputs, api, type RouterInputs } from "~/utils/api";
 import {
   CheckCircleIcon,
+  EnvelopeIcon,
   MinusCircleIcon,
+  PencilIcon,
   PlusCircleIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useUser } from "@clerk/nextjs";
 import { useForm, type SubmitHandler, useFieldArray } from "react-hook-form";
 import { useState } from "react";
 
 type Party = RouterOutputs["parties"]["getAll"][number];
-const PartyCard = ({ party }: { party: Party }) => (
-  <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
-    <div className="flow-root">
-      <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
-        {party.guests.map((guest) => (
-          <li key={guest.id} className="py-3 sm:py-4">
-            <div className="flex items-center space-x-4">
-              <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-1 truncate text-sm font-medium text-gray-900 dark:text-white">
-                  {`${guest.firstName} ${guest.lastName}`}
-                  {guest.gender === "MALE" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-gender-male"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M9.5 2a.5.5 0 0 1 0-1h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V2.707L9.871 6.836a5 5 0 1 1-.707-.707L13.293 2H9.5zM6 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-gender-female"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM3 5a5 5 0 1 1 5.5 4.975V12h2a.5.5 0 0 1 0 1h-2v2.5a.5.5 0 0 1-1 0V13h-2a.5.5 0 0 1 0-1h2V9.975A5 5 0 0 1 3 5z"
-                      />
-                    </svg>
-                  )}
-                </p>
-                <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                  {guest.email}
-                </p>
+const PartyCard = ({ party }: { party: Party }) => {
+  const utils = api.useContext();
+  const { mutate } = api.parties.delete.useMutation({
+    onMutate: async (partyId) => {
+      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      await utils.parties.getAll.cancel();
+
+      // Snapshot the previous value
+      const previousParties = utils.parties.getAll.getData();
+
+      // Optimistically update to the new value
+      utils.parties.getAll.setData(undefined, (old) => {
+        return old?.filter((party) => party.id !== partyId);
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousParties };
+    },
+    onError(err, newTodo, ctx) {
+      // If the mutation fails, use the context-value from onMutate
+      if (!ctx) return;
+      utils.parties.getAll.setData(undefined, ctx.previousParties);
+      console.log(err);
+    },
+    onSettled() {
+      // Sync with server once mutation has settled
+      void utils.parties.getAll.invalidate();
+    },
+  });
+  return (
+    <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
+      <div className="flow-root">
+        <ul
+          role="list"
+          className="divide-y divide-gray-200 dark:divide-gray-700"
+        >
+          {party.guests.map((guest) => (
+            <li key={guest.id} className="py-3 sm:py-4">
+              <div className="flex items-center space-x-4">
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-1 truncate text-sm font-medium text-gray-900 dark:text-white">
+                    {`${guest.firstName} ${guest.lastName}`}
+                    {guest.gender === "MALE" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-gender-male"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M9.5 2a.5.5 0 0 1 0-1h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V2.707L9.871 6.836a5 5 0 1 1-.707-.707L13.293 2H9.5zM6 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-gender-female"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M8 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM3 5a5 5 0 1 1 5.5 4.975V12h2a.5.5 0 0 1 0 1h-2v2.5a.5.5 0 0 1-1 0V13h-2a.5.5 0 0 1 0-1h2V9.975A5 5 0 0 1 3 5z"
+                        />
+                      </svg>
+                    )}
+                    {guest.mendhi && <PencilIcon className="h-4 w-4" />}
+                  </p>
+                  <p className="truncate text-sm text-gray-500 dark:text-gray-400">
+                    {guest.email}
+                  </p>
+                </div>
+                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                  <EnvelopeIcon className="h-6 w-6" />
+                </div>
               </div>
-              <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                <CheckCircleIcon className="h-8 w-8" />
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+        <div className="flex place-content-end">
+          <button
+            onClick={() => {
+              mutate(party.id);
+            }}
+          >
+            <TrashIcon className="h-6 w-6 text-white" />
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const AddPartyCard = () => {
   const { control, register, handleSubmit, reset } =
@@ -130,6 +176,7 @@ const AddPartyCard = () => {
   return (
     <div className="container flex max-w-md flex-col gap-6">
       <button
+        disabled={showForm}
         onClick={() => {
           setShowForm(true);
           append({
@@ -137,11 +184,11 @@ const AddPartyCard = () => {
             lastName: "",
             email: "",
             gender: "MALE",
-            mendhi: "YES",
+            mendhi: "NO",
           });
         }}
         type="button"
-        className="place-self-end rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+        className="place-self-end rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 disabled:opacity-50 dark:focus:ring-green-800"
       >
         Add Party
       </button>
@@ -162,13 +209,15 @@ const AddPartyCard = () => {
                           <span className="font-semibold text-white">
                             Guest #{index + 1}
                           </span>
-                          <button
-                            onClick={() => {
-                              remove(index);
-                            }}
-                          >
-                            <MinusCircleIcon className="h-7 w-7 text-white" />
-                          </button>
+                          {fields.length > 1 && (
+                            <button
+                              onClick={() => {
+                                remove(index);
+                              }}
+                            >
+                              <MinusCircleIcon className="h-7 w-7 text-white" />
+                            </button>
+                          )}
                         </div>
                         <div>
                           <label
@@ -191,7 +240,7 @@ const AddPartyCard = () => {
                         <div>
                           <label
                             htmlFor="lastName"
-                            className="mb-2 text-sm font-medium text-gray-900 placeholder:block dark:text-white"
+                            className="mb-2 block text-sm font-medium text-gray-900 placeholder:block dark:text-white"
                           >
                             Last Name
                           </label>
@@ -271,17 +320,17 @@ const AddPartyCard = () => {
                       lastName: "",
                       email: "",
                       gender: "MALE",
-                      mendhi: "YES",
+                      mendhi: "NO",
                     });
                   }}
                 >
                   <PlusCircleIcon className="h-8 w-8 text-white" />
                 </button>
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                   <div>
                     <select
                       id="countries"
-                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                      className="w-fullh-full block rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                       {...register("inviter", {
                         required: true,
                       })}
