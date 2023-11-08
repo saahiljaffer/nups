@@ -15,7 +15,7 @@ export default function Home() {
       >
         <div
           className={clsx(
-            "absolute h-12 w-12 rounded-full bg-black",
+            "absolute h-12 w-12 rounded-full bg-white",
             isClicked && "animate-slideOut"
           )}
         >
