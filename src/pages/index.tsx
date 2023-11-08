@@ -15,18 +15,20 @@ export default function Home() {
       >
         <div
           className={clsx(
-            "absolute h-12 w-12 rounded-full bg-white",
-            isClicked && "animate-slideOut"
+            "absolute h-full w-2 border-r-4 shadow-[8px_0_5px_-2px_rgba(0,0,0,0.2)]",
+            isClicked && "hidden animate-disappear"
           )}
-        >
-          {/* <Image
-            alt=""
-            src="/card.png"
-            width={3042}
-            height={4032}
-            className="h-full object-contain"
-          /> */}
-        </div>
+        ></div>
+        <Image
+          alt=""
+          src="/logo.png"
+          width={3042}
+          height={4032}
+          className={clsx(
+            "z-50 h-12 w-12 rounded-full bg-white object-contain  hover:transition-all",
+            isClicked && "hidden animate-disappear"
+          )}
+        />
         <div
           className={clsx(
             "mx-auto flex flex-col items-end gap-8 p-8 first-letter:flex-col",
