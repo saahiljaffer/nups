@@ -16,18 +16,17 @@ export default {
         },
         appear: {
           "0%": { opacity: "0" },
-          // "80%": { opacity: "0" },
+          // "50%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
         disappear: {
-          "0%": { opacity: "1" },
-          "100%": { opacity: "0" },
+          "100%": { width: "100vw" },
         },
       },
       animation: {
         slideOut: "slideOut 4s forwards",
-        appear: "appear 4s forwards",
-        disappear: "appear 4s backwards",
+        appear: "appear 6s forwards",
+        disappear: "disappear 4s forwards",
       },
     },
   },

@@ -15,8 +15,8 @@ export default function Home() {
       >
         <div
           className={clsx(
-            "absolute h-full w-2 border-r-4 shadow-[8px_0_5px_-2px_rgba(0,0,0,0.2)]",
-            isClicked && "hidden animate-disappear"
+            "absolute h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]",
+            isClicked && "animate-disappear"
           )}
         ></div>
         <Image
@@ -25,13 +25,13 @@ export default function Home() {
           width={3042}
           height={4032}
           className={clsx(
-            "z-50 h-12 w-12 rounded-full bg-white object-contain  hover:transition-all",
+            "z-50 h-36 w-36 rounded-full bg-white object-contain p-2 shadow-lg shadow-[#304135]",
             isClicked && "hidden animate-disappear"
           )}
         />
         <div
           className={clsx(
-            "mx-auto flex flex-col items-end gap-8 p-8 first-letter:flex-col",
+            "mx-auto flex hidden flex-col items-end gap-8 p-8 first-letter:flex-col",
             isClicked ? "animate-appear" : "hidden"
           )}
         >
