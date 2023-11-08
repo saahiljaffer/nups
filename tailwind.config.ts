@@ -11,18 +11,18 @@ export default {
       },
       keyframes: {
         slideOut: {
-          "0%": { left: "0" },
+          "0%": { left: "50%" },
           "100%": { left: "100%" },
         },
         appear: {
           "0%": { opacity: "0" },
-          "90%": { opacity: "0" },
+          "80%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
       },
       animation: {
         slideOut: "slideOut 4s forwards",
-        appear: "appear 3s forwards",
+        appear: "appear 4s forwards",
       },
     },
   },
