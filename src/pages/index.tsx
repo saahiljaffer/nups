@@ -15,7 +15,7 @@ export default function Home() {
       >
         <div
           className={clsx(
-            "fixed left-[50%] flex h-full items-center justify-center",
+            "fixed right-[50%] flex h-full items-center justify-center",
             isClicked && "animate-slideOut"
           )}
         >
@@ -26,7 +26,7 @@ export default function Home() {
             height={1024}
             className="fixed z-10 h-40 w-40"
           />
-          <div className="fixed h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]"></div>
+          <div className="fixed h-full w-3 shadow-[-10px_0_10px_0px_rgba(48,65,53,0.5)]"></div>
         </div>
         <div
           className={clsx(
