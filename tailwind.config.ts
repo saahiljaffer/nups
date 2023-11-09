@@ -12,7 +12,7 @@ export default {
       keyframes: {
         slideOut: {
           "0%": { left: "50%" },
-          "100%": { left: "-10%" },
+          "100%": { left: "-20%" },
         },
         slideIn: {
           "0%": { opacity: "0" },
