@@ -30,7 +30,7 @@ export default function Home() {
         </div>
         <div
           className={clsx(
-            "fixed mx-auto flex w-fit flex-col items-start gap-8 p-8 first-letter:flex-col",
+            "fixed flex w-fit flex-col items-start gap-8 whitespace-nowrap p-8",
             isClicked ? "animate-slideIn" : "hidden"
           )}
         >
