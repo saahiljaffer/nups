@@ -15,26 +15,25 @@ export default function Home() {
           setIsClicked(true);
         }}
       >
-        <div
-          className={clsx(
-            "fixed left-[50%] flex h-full w-fit items-center justify-center",
-            isClicked && "animate-slideOut"
-          )}
-        >
-          <Image
-            alt=""
-            src="/logo.png"
-            width={1024}
-            height={1024}
-            className={clsx("fixed z-50 h-40 w-40 rounded-full object-cover")}
-          />
+        <div>
           <div
             className={clsx(
-              "h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]"
+              "fixed left-[50%] h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]",
+              isClicked && "animate-slideOut2"
             )}
           ></div>
+          <Image
+            alt=""
+            src="/logo4.png"
+            width={1024}
+            height={1024}
+            className={clsx(
+              "fixed left-[42%] top-[38%] z-10 h-40 w-40 justify-self-end rounded-full object-cover",
+              isClicked && "animate-slideOut"
+            )}
+          />
         </div>
-        {/* <div
+        <div
           className={clsx(
             "mx-auto flex hidden flex-col items-end gap-8 p-8 first-letter:flex-col",
             isClicked ? "animate-appear" : "hidden"
@@ -58,10 +57,8 @@ export default function Home() {
             I wanna be there
           </Link>
           <p>reception to follow</p>
-        </div> */}
+        </div>
       </div>
     </>
   );
 }
-
-//
