@@ -8,16 +8,14 @@ export default function Home() {
   return (
     <>
       <div
-        className={clsx(
-          "fixed left-0 top-0 h-screen w-screen overflow-hidden bg-[#96ac98]"
-        )}
+        className="h-screen w-screen bg-[#96ac98]"
         onClick={() => {
           setIsClicked(true);
         }}
       >
         <div
           className={clsx(
-            "fixed left-[50%] flex h-full w-fit items-center justify-center",
+            "fixed left-[50%] flex h-full items-center justify-center",
             isClicked && "animate-slideOut"
           )}
         >
@@ -26,13 +24,9 @@ export default function Home() {
             src="/logo.png"
             width={1024}
             height={1024}
-            className={clsx("fixed z-50 h-40 w-40 rounded-full object-cover")}
+            className="fixed z-10 h-40 w-40"
           />
-          <div
-            className={clsx(
-              "h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]"
-            )}
-          ></div>
+          <div className="fixed h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]"></div>
         </div>
         {/* <div
           className={clsx(
