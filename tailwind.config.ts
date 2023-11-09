@@ -12,11 +12,12 @@ export default {
       keyframes: {
         slideOut: {
           "0%": { left: "50%" },
-          "100%": { left: "-20%" },
+          "100%": { left: "-10%" },
         },
         slideIn: {
-          "0%": { left: "100%" },
-          "100%": { left: "0%" },
+          "0%": { opacity: "0" },
+          "99%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
       },
       animation: {
