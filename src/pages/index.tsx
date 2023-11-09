@@ -30,16 +30,16 @@ export default function Home() {
         </div>
         <div
           className={clsx(
-            "fixed flex w-fit flex-col items-start gap-8 whitespace-nowrap p-8",
+            "fixed flex w-full flex-col items-end gap-8 whitespace-nowrap p-8",
             isClicked ? "animate-slideIn" : "hidden"
           )}
         >
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-end">
             <p>Saahil</p>
             <span>Son of Muntazir & Fatim Jaffer</span>
           </div>
           <p>and</p>
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-end">
             <p>Fatimah</p>
             <span>Daughter of Riyaz & Sabira Jessa</span>
           </div>
