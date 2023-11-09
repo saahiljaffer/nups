@@ -28,18 +28,18 @@ export default function Home() {
           />
           <div className="fixed h-full w-3 shadow-[10px_0_10px_0px_rgba(48,65,53,0.5)]"></div>
         </div>
-        {/* <div
+        <div
           className={clsx(
-            "mx-auto flex hidden flex-col items-end gap-8 p-8 first-letter:flex-col",
-            isClicked ? "animate-appear" : "hidden"
+            "fixed mx-auto flex w-fit flex-col items-start gap-8 p-8 first-letter:flex-col",
+            isClicked ? "animate-slideIn" : "hidden"
           )}
         >
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-start">
             <p>Saahil</p>
             <span>Son of Muntazir & Fatim Jaffer</span>
           </div>
           <p>and</p>
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-start">
             <p>Fatimah</p>
             <span>Daughter of Riyaz & Sabira Jessa</span>
           </div>
@@ -52,7 +52,7 @@ export default function Home() {
             I wanna be there
           </Link>
           <p>reception to follow</p>
-        </div> */}
+        </div>
       </div>
     </>
   );

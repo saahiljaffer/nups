@@ -14,24 +14,14 @@ export default {
           "0%": { left: "50%" },
           "100%": { left: "-20%" },
         },
-        // slideOut2: {
-        //   "0%": { left: "50%" },
-        //   "100%": { left: "-20%" },
-        // },
-        // appear: {
-        //   "0%": { opacity: "0" },
-        //   // "50%": { opacity: "0" },
-        //   "100%": { opacity: "1" },
-        // },
-        // disappear: {
-        //   "100%": { width: "100vw" },
-        // },
+        slideIn: {
+          "0%": { left: "100%" },
+          "100%": { left: "0%" },
+        },
       },
       animation: {
         slideOut: "slideOut 4s forwards",
-        slideOut2: "slideOut2 4s forwards",
-        appear: "appear 6s forwards",
-        disappear: "disappear 4s forwards",
+        slideIn: "slideIn 4s forwards",
       },
     },
   },
