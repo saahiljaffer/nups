@@ -1,10 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { Stalemate as Sacramento } from "next/font/google";
-import { useEffect, useState } from "react";
-import { useUser, useSignIn } from "@clerk/nextjs";
-import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
+import { useState } from "react";
 
 const sacramento = Sacramento({
   weight: "400",
@@ -12,30 +9,7 @@ const sacramento = Sacramento({
   display: "swap",
 });
 
-// Grab the query param server side, and pass through props
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log(context.query);
-  return {
-    props: { signInToken: context.query.token ? context.query.token : null },
-  };
-};
-
 export default function Home() {
-  const { signIn, setSession } = useSignIn();
-  const router = useRouter();
-
-  useEffect(() => {
-    console.log(router.query);
-    // const res = await signIn.create({
-    //   strategy: "ticket",
-    //   ticket: router.query as string,
-    // });
-
-    // setSession(res.createdSessionId, () => {
-    //   setSignInProcessed(true);
-    // });
-  }, [router.query]);
-
   const [isClicked, setIsClicked] = useState(false);
   return (
     <>

@@ -148,6 +148,7 @@ const AddPartyCard = () => {
             partyId: "optimistic-party",
             mendhi: guest.mendhi === "YES",
             status: "NEW",
+            clerkId: "",
           })),
         };
         if (!prev) return [optimisticParty];

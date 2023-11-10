@@ -33,6 +33,7 @@ export const partiesRouter = createTRPCRouter({
             create: input.guests.map((guest) => ({
               ...guest,
               mendhi: guest.mendhi === "YES",
+              clerkId: "",
             })),
           },
         },
