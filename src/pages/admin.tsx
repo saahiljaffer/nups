@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { type RouterOutputs, api, type RouterInputs } from "~/utils/api";
 import {
   CheckCircleIcon,
@@ -6,7 +5,9 @@ import {
   MinusCircleIcon,
   PencilIcon,
   PlusCircleIcon,
+  SparklesIcon,
   TrashIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useUser } from "@clerk/nextjs";
 import { useForm, type SubmitHandler, useFieldArray } from "react-hook-form";
@@ -91,7 +92,15 @@ const PartyCard = ({ party }: { party: Party }) => {
                   </p>
                 </div>
                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                  <EnvelopeIcon className="h-6 w-6" />
+                  {guest.status === "NEW" ? (
+                    <SparklesIcon className="h-6 w-6" />
+                  ) : guest.status === "INVITED" ? (
+                    <EnvelopeIcon className="h-6 w-6" />
+                  ) : guest.status === "ATTENDING" ? (
+                    <CheckCircleIcon className="h-6 w-6" />
+                  ) : (
+                    <XCircleIcon className="h-6 w-6" />
+                  )}
                 </div>
               </div>
             </li>
@@ -138,6 +147,7 @@ const AddPartyCard = () => {
             updatedAt: new Date(),
             partyId: "optimistic-party",
             mendhi: guest.mendhi === "YES",
+            status: "NEW",
           })),
         };
         if (!prev) return [optimisticParty];
@@ -175,23 +185,38 @@ const AddPartyCard = () => {
 
   return (
     <div className="container flex max-w-md flex-col gap-6">
-      <button
-        disabled={showForm}
-        onClick={() => {
-          setShowForm(true);
-          append({
-            firstName: "",
-            lastName: "",
-            email: "",
-            gender: "MALE",
-            mendhi: "NO",
-          });
-        }}
-        type="button"
-        className="place-self-end rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 disabled:opacity-50 dark:focus:ring-green-800"
-      >
-        Add Party
-      </button>
+      <div className="flex justify-between">
+        {" "}
+        <button
+          onClick={async () => {
+            await fetch("/api/send", {
+              method: "POST",
+            });
+          }}
+          className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-green-400 to-blue-600 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-200 group-hover:from-green-400 group-hover:to-blue-600 dark:text-white dark:focus:ring-green-800"
+        >
+          <span className="relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900">
+            Send Emails
+          </span>
+        </button>
+        <button
+          disabled={showForm}
+          onClick={() => {
+            setShowForm(true);
+            append({
+              firstName: "",
+              lastName: "",
+              email: "",
+              gender: "MALE",
+              mendhi: "NO",
+            });
+          }}
+          type="button"
+          className="rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+        >
+          Add Party
+        </button>
+      </div>
       {showForm && (
         <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 sm:p-8">
           <div className="flow-root">
@@ -405,20 +430,13 @@ export default function Home() {
   if (!data) return <div>Something went wrong</div>;
 
   return (
-    <>
-      <Head>
-        <title>nups</title>
-        <meta name="description" content="nups" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
-        <div className="container flex max-w-md flex-col items-center justify-center gap-6 px-4 py-16">
-          <AddPartyCard />
-          {data.map((party) => (
-            <PartyCard key={party.id} party={party} />
-          ))}
-        </div>
-      </main>
-    </>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
+      <div className="container flex max-w-md flex-col items-center justify-center gap-6 px-4 py-16">
+        <AddPartyCard />
+        {data.map((party) => (
+          <PartyCard key={party.id} party={party} />
+        ))}
+      </div>
+    </main>
   );
 }

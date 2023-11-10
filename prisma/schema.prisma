@@ -22,6 +22,8 @@ model Guest {
   email String?
   gender Gender
   mendhi Boolean @default(false)
+  status Status @default(NEW)
+  clerkId String
   @@index([partyId])
 }
 
@@ -41,4 +43,11 @@ enum Gender {
 enum Inviter {
   BRIDE
   GROOM
+}
+
+enum Status {
+  NEW
+  INVITED
+  ATTENDING
+  NOT_ATTENDING
 }
